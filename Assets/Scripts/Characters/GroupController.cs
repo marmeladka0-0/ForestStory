@@ -10,12 +10,12 @@ public class GroupController : MonoBehaviour
     void Update()
     {
         // 1. Переключение по ПКМ
-        if (Input.GetMouseButtonDown(1))
-        {
-            selectedCharacter = (selectedCharacter + 1) % 3;
-            // Отправляем сигнал всем: "Выбран персонаж № X!"
-            EventManager.OnCharacterSelected?.Invoke(selectedCharacter);
-        }
+        //if (Input.GetMouseButtonDown(1))
+        //{
+        //    selectedCharacter = (selectedCharacter + 1) % 3;
+        //    // Отправляем сигнал всем: "Выбран персонаж № X!"
+        //    EventManager.OnCharacterSelected?.Invoke(selectedCharacter);
+        //}
 
         // 2. Движение по ЛКМ
         if (Input.GetMouseButtonDown(0))

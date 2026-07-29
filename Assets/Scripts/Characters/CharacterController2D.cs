@@ -5,12 +5,14 @@
 public class CharacterController2D : MonoBehaviour
 {
     public int characterID; // 1 - дедушка, 2 - внучка
-    // приватная переменая, но видимая в инспекторе юнити
+    // SerializedField приватная переменая, но видимая в инспекторе юнити
     // https://www.youtube.com/watch?v=INWP96nNg_0
     [SerializeField] public float moveSpeed = 3.5f;
     
     private Vector3 targetPosition;
     private SpriteRenderer spriteRenderer;
+    //добавила тут
+    private bool isSelected = false;
 
     void Awake()
     {
@@ -18,6 +20,7 @@ public class CharacterController2D : MonoBehaviour
         targetPosition = transform.position;
     }
 
+    //персонаж слушает изменения чтоб изменить внешний вид, а группа чтоб контролировать то кто ходит
     // Подключаемся к радиоволне при появлении
     void OnEnable()
     {
@@ -47,16 +50,28 @@ public class CharacterController2D : MonoBehaviour
     {
         if (spriteRenderer == null) return;
 
-        if (selectedID == characterID)
-            spriteRenderer.color = Color.yellow; // Выбран я!
-        else
-            spriteRenderer.color = Color.white;  // Ходим вместе или выбран другой
+        isSelected = (selectedID == characterID);
+
+        // Включаем или выключаем подсветку/материал
+        if (spriteRenderer != null)
+        {
+            spriteRenderer.color = isSelected ? Color.yellow : Color.white;
+        }
     }
 
     private void OnMouseDown()
     {
         // Отправляем сигнал: "Выбран персонаж с моим ID!"
-        EventManager.OnCharacterSelected?.Invoke(characterID);
+        if (isSelected)
+        {
+            // Если мы УЖЕ были выбраны — сбрасываем выбор на ОБЕИХ (ID = 0)
+            EventManager.OnCharacterSelected?.Invoke(0);
+        }
+        else
+        {
+            // Если мы НЕ были выбраны — выбираем этого персонажа (ID = 1 или 2)
+            EventManager.OnCharacterSelected?.Invoke(characterID);
+        }
     }
 }
 
