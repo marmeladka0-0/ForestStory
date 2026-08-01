@@ -36,13 +36,28 @@ public class CharacterController2D : MonoBehaviour
     void Update()
     {
         // Каждая персонажка плавно идет к своей целевой точке
-        transform.position = Vector3.MoveTowards(transform.position, targetPosition, moveSpeed * Time.deltaTime);
+        if (Vector3.Distance(transform.position, targetPosition) > 0.1f)
+        {
+            // Двигаем персонажа...
+            transform.position = Vector3.MoveTowards(transform.position, targetPosition, moveSpeed * Time.deltaTime);
+
+            // 🔊 ВЫЗЫВАЕМ ЗВУК ШАГА
+            if (AudioManager.Instance != null)
+            {
+                AudioManager.Instance.PlayFootstep();
+            }
+        }
     }
 
     // Команда задать новую точку ходьбы
     public void SetTarget(Vector3 newTarget)
     {
         targetPosition = newTarget;
+
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.ResetStepTimer();
+        }
     }
 
     // Срабатывает АВТОМАТИЧЕСКИ, когда передают смену выбора!
