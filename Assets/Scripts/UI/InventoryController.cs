@@ -6,7 +6,7 @@ public class InventoryController : MonoBehaviour
     private InventoryPage inventoryUI;
     public int inventorySize = 12;
 
-    public void Start() {
+    public void Awake() {
         inventoryUI.InitializeInventoryUI(inventorySize);
     }
 
