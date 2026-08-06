@@ -3,14 +3,20 @@ using UnityEngine;
 
 public class EventManager
 {
-    //смена главного персонажа (0 - оба, 1 - дед, 2 - внучка)
+    //main character is changed => update a status/event here
     public static Action<int> OnCharacterSelected;
 
+    //normaly all logic should be here
+    //and on other scripts all variables should be private
+    //we need some fix of logic even for now((
 
-
-    // Радиоволна 2: Подлетели/подошли к NPC, пора вызывать диалог (передаем текст)
+    //if dialog with npc is triggered
     //public static Action<string> OnDialogueTriggered;
 
-    //// Радиоволна 3: Диалог закрылся
+    //If we stop a dialog
     //public static Action OnDialogueClosed;
+
+
+    //maybe even step sound logic should be here
+    //anyway need fixes
 }

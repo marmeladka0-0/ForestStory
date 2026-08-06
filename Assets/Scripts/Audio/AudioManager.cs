@@ -4,23 +4,25 @@ public class AudioManager : MonoBehaviour
 {
     public static AudioManager Instance { get; private set; }
 
-    [Header("Источники звука")]
-    [SerializeField] private AudioSource musicSource; // Для фоновой музыки
-    [SerializeField] private AudioSource sfxSource;   // Для шагов и коротких звуков
+    [Header("Sources of the sound")]
+    [SerializeField] private AudioSource musicSource; // background music
+    [SerializeField] private AudioSource sfxSource;   // sound of steps and small sounds
 
-    [Header("Стартовые звуки")]
-    [SerializeField] private AudioClip backgroundMusic; // Фоновое сопровождение
-    [SerializeField] private AudioClip stepSound;       // Звук шага
+    [Header("Start sounds")]
+    [SerializeField] private AudioClip backgroundMusic; 
+    [SerializeField] private AudioClip stepSound;       
 
-    [SerializeField] private float musicVolume = 0.1f;
+    [SerializeField] private float musicVolume = 0.1f; //background music volume
 
     [Header("Настройки шагов")]
-    [SerializeField] private float stepInterval = 0.4f; // Частота шагов в секундах
+    [SerializeField] private float stepInterval = 0.4f; //Interval of the steps
     private float stepTimer = 0f;
 
     private void Awake()
     {
-        // Делаем менеджер единым для всех сцен
+        //I am not so sure that it should be like this!!!!!
+        //but this make sure that the sound is the same for all scenes
+        //kinda not that good, you know
         if (Instance == null)
         {
             Instance = this;
@@ -34,14 +36,14 @@ public class AudioManager : MonoBehaviour
 
     private void Start()
     {
-        // Автоматически запускаем фоновую музыку при старте игры
+        //Start background music when the game start
         if (backgroundMusic != null)
         {
             PlayMusic(backgroundMusic);
         }
     }
 
-    // Воспроизведение фоновой музыки
+    //do a loop for music
     public void PlayMusic(AudioClip clip)
     {
         if (musicSource == null) return;
@@ -52,7 +54,8 @@ public class AudioManager : MonoBehaviour
         musicSource.Play();
     }
 
-    // Вызывается из скрипта движения, когда персонаж идет
+    //When the character move => sound of steps
+    //Is called from the characterController2D script
     public void PlayFootstep()
     {
         stepTimer += Time.deltaTime;
@@ -61,18 +64,18 @@ public class AudioManager : MonoBehaviour
         {
             if (sfxSource != null && stepSound != null)
             {
-                // Небольшая рандомизация тона (Pitch) делает шаги живыми, а не роботоподобными
+                //randomization of pitch to make step sounds more random
                 sfxSource.pitch = Random.Range(0.9f, 1.1f);
-                sfxSource.PlayOneShot(stepSound, 1.0f); // 0.6f — громкость шага
+                sfxSource.PlayOneShot(stepSound, 1.0f);
             }
 
-            stepTimer = 0f; // Сбрасываем таймер
+            stepTimer = 0f;
         }
     }
 
-    // Сброс таймера шагов при остановке
+    //Turn of the timer if the character stoped, to start from the start of the sound next time
     public void ResetStepTimer()
     {
-        stepTimer = stepInterval; // Чтобы следующий шаг сработал сразу при начале движения
+        stepTimer = stepInterval;
     }
 }

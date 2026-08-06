@@ -2,21 +2,21 @@ using UnityEngine;
 
 public class NPCInteractable : Interactable2D
 {
-    [Header("Настройки диалога")]
+    [Header("Dialog settings")]
     [SerializeField]
     private string[] dialogueLines = new string[] {
-        "Привет!",
-        "Хороший сегодня день."
+        "Hello!",
+        "Today is a good day."
     };
 
     private int currentLineIndex = 0;
 
-    // Переопределяем метод взаимодействия под логику NPC
+    //ovverride our abstract function
     public override void Interact()
     {
         if (dialogueLines.Length == 0) return;
 
-        // Пока выводим в консоль
+        //write it on console for now
         Debug.Log($"<b>[{objectName}]</b>: {dialogueLines[currentLineIndex]}");
 
         currentLineIndex++;
@@ -28,7 +28,7 @@ public class NPCInteractable : Interactable2D
 
     protected override void OnTriggerExit2D(Collider2D other)
     {
-        base.OnTriggerExit2D(other); // Выполняем базовый отход (прячем подсказку)
-        currentLineIndex = 0;        // Сбрасываем реплику на начало
+        base.OnTriggerExit2D(other); // WTF the hint is, ai is crazy
+        currentLineIndex = 0;        // all replics on the start again
     }
 }
