@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class GroupController : MonoBehaviour
 {
@@ -13,6 +14,11 @@ public class GroupController : MonoBehaviour
         //move characters
         if (Input.GetMouseButtonDown(0))
         {
+            if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
+            {
+                return;
+            }
+
             HandleMapClick();
         }
 
@@ -56,10 +62,10 @@ public class GroupController : MonoBehaviour
         else
         {
             if (grandfather != null)
-                grandfather.SetTarget(point + new Vector3(-0.6f, 0, 0));
+                grandfather.SetTarget(point + new Vector3(-0.6f, 1.5f, 0));
 
             if (granddaughter != null)
-                granddaughter.SetTarget(point + new Vector3(0.6f, 0, 0));
+                granddaughter.SetTarget(point + new Vector3(0.6f, 1.0f, 0));
         }
     }
 

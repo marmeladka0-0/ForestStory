@@ -8,15 +8,29 @@ public class CharacterController2D : MonoBehaviour
     // SerializedField private variable, but visible in unity redactor
     // https://www.youtube.com/watch?v=INWP96nNg_0
     [SerializeField] public float moveSpeed = 3.5f;
-    
+    [SerializeField] private float stoppingDistance = 0.25f;
+
     private Vector3 targetPosition;
     private SpriteRenderer spriteRenderer;
     private bool isSelected = false;
+
+    private Rigidbody2D rb;
 
     void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
         targetPosition = transform.position;
+        rb = GetComponent<Rigidbody2D>();
+    }
+
+    private void OnCollisionStay2D(Collision2D collision)
+    {
+        // Если мы всё ещё пытаемся идти, но физика нас не пускает — останавливаемся
+        if (Vector2.Distance(rb.position, targetPosition) > stoppingDistance)
+        {
+            targetPosition = rb.position;
+            rb.linearVelocity = Vector2.zero; // Сбрасываем инерцию столкновения
+        }
     }
 
     //character has an event listner to change skin (if selected)
@@ -36,16 +50,23 @@ public class CharacterController2D : MonoBehaviour
     void Update()
     {
         //each one move to the target oisition
-        if (Vector3.Distance(transform.position, targetPosition) > 0.1f)
-        {
-            //move character
-            transform.position = Vector3.MoveTowards(transform.position, targetPosition, moveSpeed * Time.deltaTime);
+        float distance = Vector2.Distance(rb.position, targetPosition);
 
-            //steps sound
+        // Если до цели еще идти и идти
+        if (distance > stoppingDistance)
+        {
+            Vector2 newPos = Vector2.MoveTowards(rb.position, targetPosition, moveSpeed * Time.fixedDeltaTime);
+            rb.MovePosition(newPos);
+
             if (AudioManager.Instance != null)
             {
                 AudioManager.Instance.PlayFootstep();
             }
+        }
+        else
+        {
+            // КЛЮЧЕВОЙ МОМЕНТ: Принудительно гасим любую оставшуюся скорость при остановке
+            rb.linearVelocity = Vector2.zero;
         }
     }
 
