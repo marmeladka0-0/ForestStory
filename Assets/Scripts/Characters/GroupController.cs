@@ -1,25 +1,24 @@
 ﻿using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class GroupController : MonoBehaviour
 {
     [SerializeField] private CharacterController2D grandfather;
     [SerializeField] private CharacterController2D granddaughter;
 
-    private int selectedCharacter = 0; // 0 - оба, 1 - дед, 2 - внучка
+    private int selectedCharacter = 0; // 0 - all, 1 - grandfather, 2 - granddaughter
 
     void Update()
     {
-        // 1. Переключение по ПКМ
-        //if (Input.GetMouseButtonDown(1))
-        //{
-        //    selectedCharacter = (selectedCharacter + 1) % 3;
-        //    // Отправляем сигнал всем: "Выбран персонаж № X!"
-        //    EventManager.OnCharacterSelected?.Invoke(selectedCharacter);
-        //}
 
-        // 2. Движение по ЛКМ
+        //move characters
         if (Input.GetMouseButtonDown(0))
         {
+            if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
+            {
+                return;
+            }
+
             HandleMapClick();
         }
 
@@ -30,52 +29,49 @@ public class GroupController : MonoBehaviour
         Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         mousePos.z = 0f;
 
-        // Проверяем, куда попал клик
+        //Find the place where the click was
         Collider2D hit = Physics2D.OverlapPoint(mousePos);
 
         if (hit != null)
         {
-            // Если кликнули по самому персонажу — ничего не делаем (он сам выберет себя через OnMouseDown)
+            //If on character - do nothing (he will handle it himself)
             if (hit.GetComponent<CharacterController2D>() != null)
             {
                 return;
             }
 
-            //тут еще будет если клик был по нпс
+            //Add click on npc here
         }
 
-        MoveGroupTo(mousePos); //если по пустому месту то двигаем
+        MoveGroupTo(mousePos); //If empty space - then move
     }
 
     public void MoveGroupTo(Vector3 point)
     {
-        // Если выбран ТОЛЬКО Дедушка (ID = 1)
+        //moving to the target point the character(s) who are selected
         if (selectedCharacter == 1)
         {
             if (grandfather != null)
                 grandfather.SetTarget(point);
         }
-        // Если выбрана ТОЛЬКО Внучка (ID = 2)
         else if (selectedCharacter == 2)
         {
             if (granddaughter != null)
                 granddaughter.SetTarget(point);
         }
-        // Если выбраны ОБА (ID = 0)
         else
         {
-            // Идут вместе в одну точку (или с небольшим смещением)
             if (grandfather != null)
-                grandfather.SetTarget(point + new Vector3(-0.6f, 0, 0));
+                grandfather.SetTarget(point + new Vector3(-0.6f, 1.5f, 0));
 
             if (granddaughter != null)
-                granddaughter.SetTarget(point + new Vector3(0.6f, 0, 0));
+                granddaughter.SetTarget(point + new Vector3(0.6f, 1.0f, 0));
         }
     }
 
     void OnEnable()
     {
-        // Слушаем, когда кто-то изменил выбор (например, через клик мышкой по персонажу)
+        //Listening events, need the one when the character was selected
         EventManager.OnCharacterSelected += UpdateSelectedCharacter;
     }
 
@@ -84,7 +80,7 @@ public class GroupController : MonoBehaviour
         EventManager.OnCharacterSelected -= UpdateSelectedCharacter;
     }
 
-    // Этот метод обновляет переменную selectedCharacter внутри TeamController!
+    //change variable selectedCharacter inside TeamController!
     private void UpdateSelectedCharacter(int newSelectedID)
     {
         selectedCharacter = newSelectedID;

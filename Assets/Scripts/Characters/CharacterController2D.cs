@@ -1,33 +1,47 @@
 ﻿using UnityEngine;
 
-// чучуть инфа про MonoBehaviour но нам пока не актуально
+// a few informarion about monoBehaviour
 // https://www.youtube.com/watch?v=t9lkekE4_vk
 public class CharacterController2D : MonoBehaviour
 {
-    public int characterID; // 1 - дедушка, 2 - внучка
-    // SerializedField приватная переменая, но видимая в инспекторе юнити
+    public int characterID; // 1 - grandfather, 2 - granddaughter
+    // SerializedField private variable, but visible in unity redactor
     // https://www.youtube.com/watch?v=INWP96nNg_0
     [SerializeField] public float moveSpeed = 3.5f;
-    
+    [SerializeField] private float stoppingDistance = 0.25f;
+
     private Vector3 targetPosition;
     private SpriteRenderer spriteRenderer;
-    //добавила тут
     private bool isSelected = false;
+
+    private Rigidbody2D rb;
 
     void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
         targetPosition = transform.position;
+        rb = GetComponent<Rigidbody2D>();
     }
 
-    //персонаж слушает изменения чтоб изменить внешний вид, а группа чтоб контролировать то кто ходит
-    // Подключаемся к радиоволне при появлении
+    private void OnCollisionStay2D(Collision2D collision)
+    {
+        // Если мы всё ещё пытаемся идти, но физика нас не пускает — останавливаемся
+        if (Vector2.Distance(rb.position, targetPosition) > stoppingDistance)
+        {
+            targetPosition = rb.position;
+            rb.linearVelocity = Vector2.zero; // Сбрасываем инерцию столкновения
+        }
+    }
+
+    //character has an event listner to change skin (if selected)
+    //group - to move the correct one
+    //Start listening events
     void OnEnable()
     {
         EventManager.OnCharacterSelected += OnSelectionChanged;
     }
 
-    // Отключаемся, чтобы не засорять память
+    //Stop it
     void OnDisable()
     {
         EventManager.OnCharacterSelected -= OnSelectionChanged;
@@ -35,21 +49,28 @@ public class CharacterController2D : MonoBehaviour
 
     void Update()
     {
-        // Каждая персонажка плавно идет к своей целевой точке
-        if (Vector3.Distance(transform.position, targetPosition) > 0.1f)
-        {
-            // Двигаем персонажа...
-            transform.position = Vector3.MoveTowards(transform.position, targetPosition, moveSpeed * Time.deltaTime);
+        //each one move to the target oisition
+        float distance = Vector2.Distance(rb.position, targetPosition);
 
-            // 🔊 ВЫЗЫВАЕМ ЗВУК ШАГА
+        // Если до цели еще идти и идти
+        if (distance > stoppingDistance)
+        {
+            Vector2 newPos = Vector2.MoveTowards(rb.position, targetPosition, moveSpeed * Time.fixedDeltaTime);
+            rb.MovePosition(newPos);
+
             if (AudioManager.Instance != null)
             {
                 AudioManager.Instance.PlayFootstep();
             }
         }
+        else
+        {
+            // КЛЮЧЕВОЙ МОМЕНТ: Принудительно гасим любую оставшуюся скорость при остановке
+            rb.linearVelocity = Vector2.zero;
+        }
     }
 
-    // Команда задать новую точку ходьбы
+    //To set new target point
     public void SetTarget(Vector3 newTarget)
     {
         targetPosition = newTarget;
@@ -60,14 +81,14 @@ public class CharacterController2D : MonoBehaviour
         }
     }
 
-    // Срабатывает АВТОМАТИЧЕСКИ, когда передают смену выбора!
+    //change character selection
     private void OnSelectionChanged(int selectedID)
     {
         if (spriteRenderer == null) return;
 
         isSelected = (selectedID == characterID);
 
-        // Включаем или выключаем подсветку/материал
+        //change color
         if (spriteRenderer != null)
         {
             spriteRenderer.color = isSelected ? Color.yellow : Color.white;
@@ -76,45 +97,45 @@ public class CharacterController2D : MonoBehaviour
 
     private void OnMouseDown()
     {
-        // Отправляем сигнал: "Выбран персонаж с моим ID!"
+        //send the signal
         if (isSelected)
         {
-            // Если мы УЖЕ были выбраны — сбрасываем выбор на ОБЕИХ (ID = 0)
+            //if 2 are selected => change 2 to unselected
             EventManager.OnCharacterSelected?.Invoke(0);
         }
         else
         {
-            // Если мы НЕ были выбраны — выбираем этого персонажа (ID = 1 или 2)
+            //if not => select one of two
             EventManager.OnCharacterSelected?.Invoke(characterID);
         }
     }
 }
 
 
-//[ ИНИЦИАЛИЗАЦИЯ (Initialization) ]
-//       │
-//       ▼
-// 1.Awake() < --Вызывается всегда при создании объекта (даже если скрипт выключен)
-//       │
-//       ▼
-// 2. OnEnable()          <-- Вызывается при каждом включении скрипта или объекта
-//       │
-//       ▼
-// 3. Start()             <-- Вызывается один раз перед первым кадром Update (скрипт должен быть включен)
-//       │
-//       ▼
-//[ИГРОВОЙ ЦИКЛ(Physics & Game Logic)]
-//       │
-// 4.FixedUpdate() < --Вызывается фиксированное число раз в секунду (для физики Rigidbody)
-//       │
-// 5. Update()            <-- Вызывается каждый кадр (для логики, ввода игрока, таймеров)
-//       │
-// 6. LateUpdate()        <-- Вызывается каждый кадр ПОСЛЕ Update (для движения камеры за персонажем)
-//       │
-//       ▼
-//[ДЕАКТИВАЦИЯ И УНИЧТОЖЕНИЕ(Decommissioning)]
-//       │
-// 7.OnDisable() < --Вызывается при выключении скрипта или объекта
-//       │
-//       ▼
-// 8. OnDestroy()         <-- Вызывается один раз перед полным удалением объекта из памяти
+//[ INITIALIZATION ]
+// │
+// ▼
+// 1. Awake() <-- Called always when the object is created (even if the script is disabled)
+// │
+// ▼
+// 2. OnEnable() <-- Called every time the script or object is enabled
+// │
+// ▼
+// 3. Start() <-- Called once before the first Update frame (the script must be enabled)
+// │
+// ▼
+//[ GAME LOOP (Physics & Game Logic) ]
+// │
+// 4. FixedUpdate() <-- Called a fixed number of times per second (for Rigidbody physics)
+// │
+// 5. Update() <-- Called every frame (for logic, player input, timers)
+// │
+// 6. LateUpdate() <-- Called every frame AFTER Update (for camera movement following a character)
+// │
+// ▼
+//[ DEACTIVATION & DESTRUCTION (Decommissioning) ]
+// │
+// 7. OnDisable() <-- Called when the script or object is disabled
+// │
+// ▼
+// 8. OnDestroy() <-- Called once before the object is completely removed from memory
