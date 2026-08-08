@@ -16,21 +16,16 @@ public class CharacterController2D : MonoBehaviour
 
     private Rigidbody2D rb;
 
+    // Переменные для отслеживания застревания в стенах/НПС
+    private Vector2 lastPosition;
+    private float stuckTimer = 0f;
+
     void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
         targetPosition = transform.position;
         rb = GetComponent<Rigidbody2D>();
-    }
-
-    private void OnCollisionStay2D(Collision2D collision)
-    {
-        // Если мы всё ещё пытаемся идти, но физика нас не пускает — останавливаемся
-        if (Vector2.Distance(rb.position, targetPosition) > stoppingDistance)
-        {
-            targetPosition = rb.position;
-            rb.linearVelocity = Vector2.zero; // Сбрасываем инерцию столкновения
-        }
+        lastPosition = rb.position;
     }
 
     //character has an event listner to change skin (if selected)
@@ -49,31 +44,62 @@ public class CharacterController2D : MonoBehaviour
 
     void Update()
     {
-        //each one move to the target oisition
+        // В Update оставили воспроизведение звука шагов
         float distance = Vector2.Distance(rb.position, targetPosition);
 
-        // Если до цели еще идти и идти
+        if (distance > stoppingDistance)
+        {
+            if (AudioManager.Instance != null)
+            {
+                AudioManager.Instance.PlayFootstep();
+            }
+        }
+    }
+
+    void FixedUpdate()
+    {
+        // Перемещение физического Rigidbody вынесено в FixedUpdate
+        float distance = Vector2.Distance(rb.position, targetPosition);
+
         if (distance > stoppingDistance)
         {
             Vector2 newPos = Vector2.MoveTowards(rb.position, targetPosition, moveSpeed * Time.fixedDeltaTime);
             rb.MovePosition(newPos);
 
-            if (AudioManager.Instance != null)
+            // ДЕТЕКТОР ЗАСТРЕВАНИЯ:
+            // Если персонаж пытается идти, но физика его не пускает (уперся в НПС/стену)
+            if (Vector2.Distance(rb.position, lastPosition) < 0.005f)
             {
-                AudioManager.Instance.PlayFootstep();
+                stuckTimer += Time.fixedDeltaTime;
+
+                // Если стоим на месте дольше 0.25 сек — останавливаемся
+                if (stuckTimer > 0.25f)
+                {
+                    targetPosition = rb.position;
+                    rb.linearVelocity = Vector2.zero;
+                    stuckTimer = 0f;
+                }
+            }
+            else
+            {
+                stuckTimer = 0f; // Движемся нормально — сбрасываем таймер
             }
         }
         else
         {
             // КЛЮЧЕВОЙ МОМЕНТ: Принудительно гасим любую оставшуюся скорость при остановке
             rb.linearVelocity = Vector2.zero;
+            stuckTimer = 0f;
         }
+
+        lastPosition = rb.position;
     }
 
     //To set new target point
     public void SetTarget(Vector3 newTarget)
     {
         targetPosition = newTarget;
+        stuckTimer = 0f;
 
         if (AudioManager.Instance != null)
         {

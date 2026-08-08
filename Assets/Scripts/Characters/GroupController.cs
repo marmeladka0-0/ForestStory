@@ -8,9 +8,23 @@ public class GroupController : MonoBehaviour
 
     private int selectedCharacter = 0; // 0 - all, 1 - grandfather, 2 - granddaughter
 
+    void Start()
+    {
+        // Игнорируем столкновения между членами группы, чтобы они не блочили друг друга
+        if (grandfather != null && granddaughter != null)
+        {
+            Collider2D col1 = grandfather.GetComponent<Collider2D>();
+            Collider2D col2 = granddaughter.GetComponent<Collider2D>();
+
+            if (col1 != null && col2 != null)
+            {
+                Physics2D.IgnoreCollision(col1, col2);
+            }
+        }
+    }
+
     void Update()
     {
-
         //move characters
         if (Input.GetMouseButtonDown(0))
         {
@@ -21,7 +35,6 @@ public class GroupController : MonoBehaviour
 
             HandleMapClick();
         }
-
     }
 
     void HandleMapClick()
