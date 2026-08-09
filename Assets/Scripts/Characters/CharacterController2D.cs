@@ -16,9 +16,14 @@ public class CharacterController2D : MonoBehaviour
 
     private Rigidbody2D rb;
 
-    // Переменные для отслеживания застревания в стенах/НПС
+    [SerializeField] private Sprite characterAvatar;
+    public Sprite CharacterAvatar => characterAvatar;
+
+    // Variables for tracking getting stuck in walls/NPCs
     private Vector2 lastPosition;
     private float stuckTimer = 0f;
+
+    private NPCInteractable targetNPC;
 
     void Awake()
     {
@@ -44,7 +49,7 @@ public class CharacterController2D : MonoBehaviour
 
     void Update()
     {
-        // В Update оставили воспроизведение звука шагов
+        // Footstep sound playback is kept in Update
         float distance = Vector2.Distance(rb.position, targetPosition);
 
         if (distance > stoppingDistance)
@@ -58,36 +63,49 @@ public class CharacterController2D : MonoBehaviour
 
     void FixedUpdate()
     {
-        // Перемещение физического Rigidbody вынесено в FixedUpdate
         float distance = Vector2.Distance(rb.position, targetPosition);
+
+        // CHECK NPC APPROACH
+        if (targetNPC != null)
+        {
+            float distanceToNPC = Vector2.Distance(transform.position, targetNPC.transform.position);
+
+            // If close enough to the NPC
+            if (distanceToNPC <= targetNPC.InteractionRadius)
+            {
+                StopMovement(); // Stop the character
+
+                NPCInteractable npcToInteract = targetNPC;
+                targetNPC = null; // IMPORTANT: Nullify before calling Interact to prevent repeated calls!
+
+                npcToInteract.Interact();
+            }
+        }
 
         if (distance > stoppingDistance)
         {
             Vector2 newPos = Vector2.MoveTowards(rb.position, targetPosition, moveSpeed * Time.fixedDeltaTime);
             rb.MovePosition(newPos);
 
-            // ДЕТЕКТОР ЗАСТРЕВАНИЯ:
-            // Если персонаж пытается идти, но физика его не пускает (уперся в НПС/стену)
+            // Stuck detector
             if (Vector2.Distance(rb.position, lastPosition) < 0.005f)
             {
                 stuckTimer += Time.fixedDeltaTime;
-
-                // Если стоим на месте дольше 0.25 сек — останавливаемся
                 if (stuckTimer > 0.25f)
                 {
                     targetPosition = rb.position;
+                    targetNPC = null; // Reset NPC if stuck against an obstacle
                     rb.linearVelocity = Vector2.zero;
                     stuckTimer = 0f;
                 }
             }
             else
             {
-                stuckTimer = 0f; // Движемся нормально — сбрасываем таймер
+                stuckTimer = 0f;
             }
         }
         else
         {
-            // КЛЮЧЕВОЙ МОМЕНТ: Принудительно гасим любую оставшуюся скорость при остановке
             rb.linearVelocity = Vector2.zero;
             stuckTimer = 0f;
         }
@@ -95,16 +113,31 @@ public class CharacterController2D : MonoBehaviour
         lastPosition = rb.position;
     }
 
-    //To set new target point
+    public void StopMovement()
+    {
+        targetPosition = rb.position;
+        rb.linearVelocity = Vector2.zero;
+        stuckTimer = 0f;
+    }
+
+    // Setting a point target (on regular map clicks)
     public void SetTarget(Vector3 newTarget)
     {
         targetPosition = newTarget;
+        targetNPC = null; // Cancel NPC target if player clicks somewhere else
         stuckTimer = 0f;
 
         if (AudioManager.Instance != null)
         {
             AudioManager.Instance.ResetStepTimer();
         }
+    }
+
+    // Setting an NPC target
+    public void SetTargetNPC(NPCInteractable npc, Vector3 approachPoint)
+    {
+        SetTarget(approachPoint); // First reset the old target and timer
+        targetNPC = npc;          // AND ONLY THEN assign the new NPC!
     }
 
     //change character selection
@@ -136,7 +169,6 @@ public class CharacterController2D : MonoBehaviour
         }
     }
 }
-
 
 //[ INITIALIZATION ]
 // │

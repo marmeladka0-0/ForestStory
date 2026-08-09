@@ -155,6 +155,7 @@ MonoBehaviour:
   characterID: 2
   moveSpeed: 3.5
   stoppingDistance: 0.25
+  characterAvatar: {fileID: 3761105354171130086, guid: 8f4ca9a53919a8e449b2b36322246223, type: 3}
 --- !u!212 &50960656
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -467,6 +468,17 @@ Tilemap:
     e31: 0
     e32: 0
     e33: 1
+--- !u!114 &63926998 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5629597278784974635, guid: fab451d24ec944343bc2f5ef4096f1a1, type: 3}
+  m_PrefabInstance: {fileID: 7494147590721668823}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &172250877
 GameObject:
   m_ObjectHideFlags: 0
@@ -558,6 +570,17 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 172250877}
   m_CullTransparentMesh: 1
+--- !u!114 &366225949 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8652496184836370000, guid: fab451d24ec944343bc2f5ef4096f1a1, type: 3}
+  m_PrefabInstance: {fileID: 7494147590721668823}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &370012986
 GameObject:
   m_ObjectHideFlags: 0
@@ -1411,15 +1434,56 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   objectName: Grandmother
   interactionHint: {fileID: 0}
-  avatarSprite: {fileID: 0}
+  dialogueArtwork: {fileID: 3551427753158594504, guid: 82231469d4ebe3845b02b5619d5e2ee7, type: 3}
+  npcAvatar: {fileID: -1929942739836287847, guid: da6ab02311d029c4aab2892f8d676212, type: 3}
+  interactionRadius: 1.2
+  greetingLine:
+    speaker: 0
+    text: Hello! What would you like to ask?
   topics:
-  - "\u0421\u043F\u0440\u043E\u0441\u0438\u0442\u044C \u043F\u0440\u043E \u043A\u043B\u044E\u0447"
-  - "\u0423\u0437\u043D\u0430\u0442\u044C \u043F\u0440\u043E \u0440\u0435\u0446\u0435\u043F\u0442"
-  - "\u041F\u043E\u043F\u0440\u043E\u0449\u0430\u0442\u044C\u0441\u044F"
-  dialogueLines:
-  - "\u041F\u0440\u0438\u0432\u0435\u0442!"
-  - "\u0425\u043E\u0440\u043E\u0448\u0438\u0439 \u0441\u0435\u0433\u043E\u0434\u043D\u044F
-    \u0434\u0435\u043D\u044C."
+  - topicName: Ask about a key
+    isGoodbye: 0
+    lines:
+    - speaker: 1
+      text: Excuse me, do you know where we can find the old cottage key?
+    - speaker: 0
+      text: Ah, the rusty iron key! It was lost near the ancient pond many years
+        ago.
+    - speaker: 1
+      text: Is it safe for us to go to the pond right now?
+    - speaker: 0
+      text: Beware of the thick fog around the water. Keep your lantern bright!
+    - speaker: 1
+      text: Thank you for the warning, we will be very careful.
+  - topicName: Ask about the recipe
+    isGoodbye: 0
+    lines:
+    - speaker: 1
+      text: Can you tell us about the herbal tea recipe you mentioned earlier?
+    - speaker: 0
+      text: Of course! You will need blue moonflowers and dried pine berries.
+    - speaker: 0
+      text: Brew them over a slow fire, and the drink will restore your strength.
+    - speaker: 1
+      text: Sounds delicious! We will look for those ingredients on our way.
+  - topicName: Ask about the forest
+    isGoodbye: 0
+    lines:
+    - speaker: 1
+      text: Why is everyone in the village so afraid of the deep forest?
+    - speaker: 0
+      text: Strange shadows wander between the trees after sunset, confusing travelers.
+    - speaker: 1
+      text: We are not afraid. As long as we stick together, we can pass through.
+    - speaker: 0
+      text: Brave words! Just remember never to stray from the main dirt path.
+  - topicName: Say goodbye
+    isGoodbye: 1
+    lines:
+    - speaker: 1
+      text: We must continue our journey now. Farewell!
+    - speaker: 0
+      text: May the forest light guide your steps, travelers. Take care!
   dialogueWindow: {fileID: 1745520162}
 --- !u!61 &635922123
 BoxCollider2D:
@@ -1501,8 +1565,8 @@ CircleCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0}
-  m_Radius: 3
+  m_Offset: {x: 0.021175861, y: 0.028234243}
+  m_Radius: 0.9459491
 --- !u!212 &635922125
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -1573,24 +1637,17 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &834020359 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 6279201509903333217, guid: fab451d24ec944343bc2f5ef4096f1a1, type: 3}
+--- !u!114 &653100328 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2850259495911894201, guid: fab451d24ec944343bc2f5ef4096f1a1, type: 3}
   m_PrefabInstance: {fileID: 7494147590721668823}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &834020364
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 834020359}
+  m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2fd89d7172b69c846916c145124c7e57, type: 3}
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  buttonText: {fileID: 0}
 --- !u!1 &856964723
 GameObject:
   m_ObjectHideFlags: 0
@@ -1627,6 +1684,7 @@ MonoBehaviour:
   characterID: 1
   moveSpeed: 3.5
   stoppingDistance: 0.25
+  characterAvatar: {fileID: 7017912697681851863, guid: 2810eab0e988dbc45a6b6959cb42add0, type: 3}
 --- !u!212 &856964725
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -1953,6 +2011,42 @@ Transform:
   - {fileID: 2097232337}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1376399221 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8303647623029394187, guid: fab451d24ec944343bc2f5ef4096f1a1, type: 3}
+  m_PrefabInstance: {fileID: 7494147590721668823}
+  m_PrefabAsset: {fileID: 0}
+--- !u!224 &1376399222 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 2011258384711636132, guid: fab451d24ec944343bc2f5ef4096f1a1, type: 3}
+  m_PrefabInstance: {fileID: 7494147590721668823}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1376399223
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1376399221}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59f8146938fff824cb5fd77236b75775, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Padding:
+    m_Left: 0
+    m_Right: 0
+    m_Top: 0
+    m_Bottom: 0
+  m_ChildAlignment: 0
+  m_Spacing: 20
+  m_ChildForceExpandWidth: 1
+  m_ChildForceExpandHeight: 0
+  m_ChildControlWidth: 1
+  m_ChildControlHeight: 1
+  m_ChildScaleWidth: 0
+  m_ChildScaleHeight: 0
+  m_ReverseArrangement: 0
 --- !u!1 &1472144942
 GameObject:
   m_ObjectHideFlags: 0
@@ -2104,11 +2198,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7ae2a6c9daa6ca34e886c3664dfb0ffd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speakerAvatar: {fileID: 0}
-  speakerNameText: {fileID: 0}
-  dialogueText: {fileID: 0}
-  topicButtonsContainer: {fileID: 0}
-  topicButtonPrefab: {fileID: 0}
+  mainArtworkImage: {fileID: 653100328}
+  speakerAvatar: {fileID: 1894809770}
+  dialogueText: {fileID: 366225949}
+  topicButtonsContainer: {fileID: 1376399222}
+  nextButton: {fileID: 63926998}
+  topicButtonPrefab: {fileID: 8107658089085439163, guid: dfc1d070f8a2b464a8d43a9a3227b008, type: 3}
 --- !u!1 &1869528075
 GameObject:
   m_ObjectHideFlags: 0
@@ -2271,6 +2366,17 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1116128302}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1894809770 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6553324837707689834, guid: fab451d24ec944343bc2f5ef4096f1a1, type: 3}
+  m_PrefabInstance: {fileID: 7494147590721668823}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2007070754
 GameObject:
   m_ObjectHideFlags: 0
@@ -2387,6 +2493,38 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1472144946}
     m_Modifications:
+    - target: {fileID: 2011258384711636132, guid: fab451d24ec944343bc2f5ef4096f1a1, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2011258384711636132, guid: fab451d24ec944343bc2f5ef4096f1a1, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2011258384711636132, guid: fab451d24ec944343bc2f5ef4096f1a1, type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2011258384711636132, guid: fab451d24ec944343bc2f5ef4096f1a1, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2011258384711636132, guid: fab451d24ec944343bc2f5ef4096f1a1, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 470.65
+      objectReference: {fileID: 0}
+    - target: {fileID: 2011258384711636132, guid: fab451d24ec944343bc2f5ef4096f1a1, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 554.86
+      objectReference: {fileID: 0}
+    - target: {fileID: 2011258384711636132, guid: fab451d24ec944343bc2f5ef4096f1a1, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -293.76
+      objectReference: {fileID: 0}
+    - target: {fileID: 2011258384711636132, guid: fab451d24ec944343bc2f5ef4096f1a1, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 104.1
+      objectReference: {fileID: 0}
     - target: {fileID: 2686543408653635675, guid: fab451d24ec944343bc2f5ef4096f1a1, type: 3}
       propertyPath: m_Color.a
       value: 1
@@ -2482,6 +2620,10 @@ PrefabInstance:
     - target: {fileID: 3740342492841972538, guid: fab451d24ec944343bc2f5ef4096f1a1, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4818139225602253458, guid: fab451d24ec944343bc2f5ef4096f1a1, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 5.2655945
       objectReference: {fileID: 0}
     - target: {fileID: 5343968070307934222, guid: fab451d24ec944343bc2f5ef4096f1a1, type: 3}
       propertyPath: m_Colors.m_FadeDuration
@@ -2580,15 +2722,16 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 6279201509903333217, guid: fab451d24ec944343bc2f5ef4096f1a1, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 5913065240336567649, guid: fab451d24ec944343bc2f5ef4096f1a1, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1745520162}
-    - targetCorrespondingSourceObject: {fileID: 6279201509903333217, guid: fab451d24ec944343bc2f5ef4096f1a1, type: 3}
+    - targetCorrespondingSourceObject: {fileID: 8303647623029394187, guid: fab451d24ec944343bc2f5ef4096f1a1, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 834020364}
+      addedObject: {fileID: 1376399223}
   m_SourcePrefab: {fileID: 100100000, guid: fab451d24ec944343bc2f5ef4096f1a1, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
