@@ -10,7 +10,7 @@ public class GroupController : MonoBehaviour
 
     void Start()
     {
-        // Игнорируем столкновения между членами группы, чтобы они не блочили друг друга
+        // Ignore collisions between group members so they don't block each other
         if (grandfather != null && granddaughter != null)
         {
             Collider2D col1 = grandfather.GetComponent<Collider2D>();
@@ -53,6 +53,12 @@ public class GroupController : MonoBehaviour
                 return;
             }
 
+            if (hit.TryGetComponent<NPCInteractable>(out NPCInteractable npc))
+            {
+                MoveGroupToNPC(npc);
+                return;
+            }
+
             //Add click on npc here
         }
 
@@ -82,6 +88,26 @@ public class GroupController : MonoBehaviour
         }
     }
 
+    private void MoveGroupToNPC(NPCInteractable npc)
+    {
+        Vector3 npcPos = npc.transform.position;
+
+        if (selectedCharacter == 1)
+        {
+            if (grandfather != null) grandfather.SetTargetNPC(npc, npcPos);
+        }
+        else if (selectedCharacter == 2)
+        {
+            if (granddaughter != null) granddaughter.SetTargetNPC(npc, npcPos);
+        }
+        else
+        {
+            // If both are selected: grandfather approaches slightly to the left, granddaughter slightly to the right
+            if (grandfather != null) grandfather.SetTargetNPC(npc, npcPos + new Vector3(-0.8f, 0f, 0f));
+            if (granddaughter != null) granddaughter.SetTargetNPC(npc, npcPos + new Vector3(0.8f, 0f, 0f));
+        }
+    }
+
     void OnEnable()
     {
         //Listening events, need the one when the character was selected
@@ -97,5 +123,21 @@ public class GroupController : MonoBehaviour
     private void UpdateSelectedCharacter(int newSelectedID)
     {
         selectedCharacter = newSelectedID;
+    }
+
+    public Sprite GetActiveCharacterAvatar()
+    {
+        if (selectedCharacter == 2 && granddaughter != null)
+        {
+            return granddaughter.CharacterAvatar;
+        }
+
+        // By default or if Grandfather (1) / Both (0) are selected
+        if (grandfather != null)
+        {
+            return grandfather.CharacterAvatar;
+        }
+
+        return null;
     }
 }
