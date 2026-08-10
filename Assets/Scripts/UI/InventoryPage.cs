@@ -77,7 +77,12 @@ namespace Inventory.UI {
         }
 
         private void HandleShowItemActions(InventoryItem inventoryItemUI) {
-            throw new NotImplementedException();
+            int index = listOfUIItems.IndexOf(inventoryItemUI);
+            if (index == -1)
+            {
+                return;
+            }
+            OnItemActionRequested?.Invoke(index);
         }
 
         private void HandleEndDrag(InventoryItem inventoryItemUI) {

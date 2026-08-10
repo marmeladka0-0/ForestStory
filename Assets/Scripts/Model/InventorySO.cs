@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace Inventory.Model
@@ -132,6 +133,26 @@ namespace Inventory.Model
         private void InformAboutChange()
         {
             OnInventoryUpdated?.Invoke(GetCurrentInventoryState());
+        }
+
+        public void RemoveItem(int itemIndex, int amount)
+        {
+            if (inventoryItems.Count > itemIndex)
+            {
+                if (inventoryItems[itemIndex].IsEmpty) {
+                    return;
+                }                
+                int reminder  = inventoryItems[itemIndex].quantity - amount;
+
+                if (reminder <= 0) {
+                    inventoryItems[itemIndex] = InventoryItemS.GetEmptyItem();
+                }
+                else {
+                    inventoryItems[itemIndex] = inventoryItems[itemIndex].ChangeQuantity(reminder);
+                }
+
+                InformAboutChange();
+            }
         }
     }
 
