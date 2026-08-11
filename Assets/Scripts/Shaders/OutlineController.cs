@@ -3,6 +3,8 @@ using UnityEngine;
 [RequireComponent(typeof(SpriteRenderer), typeof(Collider2D))]
 public class OutlineController : MonoBehaviour
 {
+    private static OutlineController currentlySelected;
+
     [SerializeField] 
     private Material outlineMaterial;
     [SerializeField] 
@@ -39,12 +41,19 @@ public class OutlineController : MonoBehaviour
 
     public void Select()
     {
+        if (currentlySelected != null && currentlySelected != this)
+        {
+            currentlySelected.Deselect();
+        }
+
         isSelected = true;
+        currentlySelected = this;
+
         if (outlineMaterial != null && spriteRenderer != null)
         {
-            spriteRenderer.material = outlineMaterial;            
-            spriteRenderer.GetPropertyBlock(mpb);
+            spriteRenderer.sharedMaterial = outlineMaterial;            
 
+            spriteRenderer.GetPropertyBlock(mpb);
             if (spriteRenderer.sprite != null)
             {
                 mpb.SetTexture("_MainTex", spriteRenderer.sprite.texture);
@@ -57,13 +66,16 @@ public class OutlineController : MonoBehaviour
     public void Deselect()
     {
         isSelected = false;
+
+        if (currentlySelected == this)
+        {
+            currentlySelected = null;
+        }
+
         if (defaultMaterial != null && spriteRenderer != null)
         {
-            spriteRenderer.material = defaultMaterial;
-            
-            spriteRenderer.GetPropertyBlock(mpb);
-            mpb.Clear();
-            spriteRenderer.SetPropertyBlock(mpb);
+            spriteRenderer.sharedMaterial = defaultMaterial;            
+            spriteRenderer.SetPropertyBlock(null);
         }
     }
 }
