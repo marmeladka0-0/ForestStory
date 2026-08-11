@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class AgentTool : MonoBehaviour
 {
+    public event System.Action<EquippableItemSO, List<ItemParameter>> OnToolChanged;
+
     [SerializeField]
     private EquippableItemSO tool;
 
@@ -13,16 +15,11 @@ public class AgentTool : MonoBehaviour
     [SerializeField]
     private List<ItemParameter> parametersToModify, itemCurrentState;
 
-    [SerializeField] private AudioSource audioSource;
-    [SerializeField] private AudioClip unequipClip;
-
-    private void Update()
-    {
-        if (Input.GetMouseButtonDown(2) && tool != null)
-        {
-            UnequipTool();
-        }
-    }
+    [SerializeField]
+    private AudioSource audioSource;
+    
+    [SerializeField] 
+    private AudioClip unequipClip;
 
     public void SetTool(EquippableItemSO toolItemSO, List<ItemParameter> itemState)
     {
@@ -31,10 +28,11 @@ public class AgentTool : MonoBehaviour
             inventoryData.AddItem(tool, 1, itemCurrentState);
         }
 
-        this.tool = toolItemSO;
-        this.itemCurrentState = new List<ItemParameter>(itemState);
+        tool = toolItemSO;
+        itemCurrentState = new List<ItemParameter>(itemState);
         
         ModifyParameters(); 
+        OnToolChanged?.Invoke(tool, itemCurrentState);
     }
 
     public void UseTool()
@@ -42,7 +40,6 @@ public class AgentTool : MonoBehaviour
         if (tool == null) {
             return;
         }
-
         ModifyParameters();
     }
 
@@ -54,17 +51,34 @@ public class AgentTool : MonoBehaviour
 
         int leftOver = inventoryData.AddItem(tool, 1, itemCurrentState);
 
-        if (leftOver == 0) {
+        if (leftOver == 0)
+        {
             Debug.Log($"Предмет {tool.Name} снят и убран в инвентарь");            
             tool = null;
             itemCurrentState.Clear();
+            OnToolChanged?.Invoke(null, null);
 
-            audioSource.PlayOneShot(unequipClip);
+            if (audioSource != null && unequipClip != null)
+            {
+                audioSource.PlayOneShot(unequipClip);
+            }
         }
         else
         {
             Debug.Log("Инвентарь полон! Невозможно снять предмет.");
         }
+    }
+
+    public void DropTool()
+    {
+        if (tool == null) {
+            return;
+        }
+
+        Debug.Log($"Предмет {tool.Name} выброшен из рук");
+        tool = null;
+        itemCurrentState.Clear();
+        OnToolChanged?.Invoke(null, null);
     }
 
     private void ModifyParameters()
@@ -106,8 +120,8 @@ public class AgentTool : MonoBehaviour
     private void BreakTool()
     {
         Debug.Log($"Предмет {tool.Name} сломался");        
-        
         tool = null;
         itemCurrentState.Clear();
+        OnToolChanged?.Invoke(null, null);
     }
 }
