@@ -1,15 +1,18 @@
 fileFormatVersion: 2
-guid: 06174811cdec0a342a1da48839874de6
+guid: f8047a73f571fcc4d8e1c8847dec1afa
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 3910422488431151610
-    second: btn_2_0
+      213: -5857882564386718488
+    second: pause_btn_mini_0
+  - first:
+      213: 14442836242027784
+    second: pause_btn_mini_1
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
     mipMapMode: 0
-    enableMipMap: 0
+    enableMipMap: 1
     sRGBTexture: 1
     linearTexture: 0
     fadeOut: 0
@@ -46,7 +49,7 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 2
+  spriteMode: 1
   spriteExtrude: 1
   spriteMeshType: 0
   alignment: 0
@@ -113,23 +116,45 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: btn_2_0
+      name: pause_btn_mini_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 508
-        height: 77
+        width: 7
+        height: 19
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: af943a0f88c944630800000000000000
-      internalID: 3910422488431151610
+      spriteID: 8ec76c518de94bea0800000000000000
+      internalID: -5857882564386718488
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pause_btn_mini_1
+      rect:
+        serializedVersion: 2
+        x: 9
+        y: 0
+        width: 9
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 80551cbdeaf433000800000000000000
+      internalID: 14442836242027784
       vertices: []
       indices: 
       edges: []
@@ -138,7 +163,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: b5ecfdfc5623236479bf621adbdad6dc
+    spriteID: 5e97eb03825dee720800000000000000
     internalID: 0
     vertices: []
     indices: 
@@ -148,7 +173,8 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      btn_2_0: 3910422488431151610
+      pause_btn_mini_0: -5857882564386718488
+      pause_btn_mini_1: 14442836242027784
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

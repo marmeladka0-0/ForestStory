@@ -35,6 +35,34 @@ namespace Inventory
             PrepareInventoryData();
         }
 
+        private void OnDestroy()
+        {
+            if (inventoryData != null)
+            {
+                inventoryData.OnInventoryUpdated -= UpdateInventoryUI;
+            }
+
+            if (inventoryUI != null)
+            {
+                inventoryUI.OnDescriptionRequested -= HandleDescriptionRequest;
+                inventoryUI.OnSwapItems             -= HandleSwapItems;
+                inventoryUI.OnStartDragging        -= HandleDragging;
+                inventoryUI.OnItemActionRequested  -= HandleItemActionRequest;
+            }
+
+            if (quickAccessUI != null)
+            {
+                quickAccessUI.OnOpenInventoryRequest -= ToggleInventory;
+                quickAccessUI.OnUnequipRequested     -= UnequipTool;
+                quickAccessUI.OnDropRequested        -= DropEquippedTool;
+            }
+
+            if (agentTool != null)
+            {
+                agentTool.OnToolChanged -= HandleToolChanged;
+            }
+        }
+
         private void Update() 
         {
             if (Input.GetKeyDown(KeyCode.I)) 
@@ -42,20 +70,23 @@ namespace Inventory
                 ToggleInventory();
             }
 
-            if (Input.GetMouseButtonDown(2) && agentTool != null)
+            if (Input.GetMouseButtonDown(2))
             {
-                agentTool.UnequipTool();
+                UnequipTool();
             }
         }
 
         private void PrepareInventoryData() 
         {
             inventoryData.Initialize();
+            inventoryData.OnInventoryUpdated -= UpdateInventoryUI;
             inventoryData.OnInventoryUpdated += UpdateInventoryUI;
 
             foreach (InventoryItemS item in initialItems)
             {
-                if (item.IsEmpty) continue;
+                if (item.IsEmpty) {
+                    continue;
+                }
                 inventoryData.AddItem(item);
             }
         }
@@ -72,20 +103,29 @@ namespace Inventory
         private void PrepareUI() 
         {
             inventoryUI.InitializeInventoryUI(inventoryData.Size);
+            
+            inventoryUI.OnDescriptionRequested -= HandleDescriptionRequest;
             inventoryUI.OnDescriptionRequested += HandleDescriptionRequest;
-            inventoryUI.OnSwapItems            += HandleSwapItems;
-            inventoryUI.OnStartDragging        += HandleDragging;
-            inventoryUI.OnItemActionRequested  += HandleItemActionRequest;
+            inventoryUI.OnSwapItems -= HandleSwapItems;
+            inventoryUI.OnSwapItems += HandleSwapItems;
+            inventoryUI.OnStartDragging -= HandleDragging;
+            inventoryUI.OnStartDragging += HandleDragging;
+            inventoryUI.OnItemActionRequested -= HandleItemActionRequest;
+            inventoryUI.OnItemActionRequested += HandleItemActionRequest;
 
             if (quickAccessUI != null)
             {
+                quickAccessUI.OnOpenInventoryRequest -= ToggleInventory;
                 quickAccessUI.OnOpenInventoryRequest += ToggleInventory;
-                quickAccessUI.OnUnequipRequested += () => agentTool?.UnequipTool();
+                quickAccessUI.OnUnequipRequested -= UnequipTool;
+                quickAccessUI.OnUnequipRequested += UnequipTool;
+                quickAccessUI.OnDropRequested -= DropEquippedTool;
                 quickAccessUI.OnDropRequested += DropEquippedTool;
             }
 
             if (agentTool != null)
             {
+                agentTool.OnToolChanged -= HandleToolChanged;
                 agentTool.OnToolChanged += HandleToolChanged;
             }
         }
@@ -121,6 +161,14 @@ namespace Inventory
             {
                 quickAccessUI.ClearSlot();
             }
+        }
+
+        private void UnequipTool()
+        {
+            if (agentTool == null) {
+                return;
+            }
+            agentTool.UnequipTool();
         }
 
         private void DropEquippedTool()
