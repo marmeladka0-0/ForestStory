@@ -115,8 +115,13 @@ public class CharacterController2D : MonoBehaviour
 
     public void StopMovement()
     {
-        targetPosition = rb.position;
-        rb.linearVelocity = Vector2.zero;
+        targetPosition = transform.position;
+        if (rb != null)
+        {
+            rb.position = transform.position;
+            rb.linearVelocity = Vector2.zero;
+        }
+        targetNPC = null;
         stuckTimer = 0f;
     }
 
@@ -167,6 +172,24 @@ public class CharacterController2D : MonoBehaviour
             //if not => select one of two
             EventManager.OnCharacterSelected?.Invoke(characterID);
         }
+    }
+
+    // Teleport character immediately and reset movement targets
+    public void TeleportTo(Vector3 newPosition)
+    {
+        transform.position = newPosition;
+
+        if (rb != null)
+        {
+            rb.position = newPosition;
+            rb.linearVelocity = Vector2.zero;
+        }
+
+        targetPosition = newPosition;
+        lastPosition = newPosition;
+        targetNPC = null;
+        stuckTimer = 0f;
+
     }
 }
 
