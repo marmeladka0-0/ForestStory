@@ -9,11 +9,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 87374dd04d795cd4d865dbf2746afa0d, type: 3}
+  m_Script: {fileID: 11500000, guid: bb3a87a65cd2bab4da200191817be4a4, type: 3}
   m_Name: Bandage
   m_EditorClassIdentifier: 
   <IsStackable>k__BackingField: 1
   <MaxStackSize>k__BackingField: 12
-  <Name>k__BackingField: bandage
-  <Description>k__BackingField: bandage Bandage BANDAGE
+  <Name>k__BackingField: Bandage
+  <Description>k__BackingField: Bandage restores Health
   <ItemImage>k__BackingField: {fileID: 21300000, guid: dea76fd930c88be4099843fdf21c141b, type: 3}
+  <DefaultParameterslist>k__BackingField: []
+  modifiersData:
+  - statModifier: {fileID: 11400000, guid: b09458b0fa6ac6642aff73c0a2c5eeae, type: 2}
+    value: 1
+  <actionSFX>k__BackingField: {fileID: 8300000, guid: 986ca93133408874fbe85a8116567b71, type: 3}

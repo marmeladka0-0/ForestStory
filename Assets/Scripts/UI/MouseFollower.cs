@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 using Inventory.UI;
 
 public class MouseFollower : MonoBehaviour
@@ -12,6 +13,12 @@ public class MouseFollower : MonoBehaviour
     {
         canvas = transform.root.GetComponent<Canvas>();
         item = GetComponentInChildren<InventoryItem>();
+        Image backgroundImage = item.GetComponent<Image>();
+        
+        if (backgroundImage != null)
+        {
+            backgroundImage.enabled = false;
+        }
     }
 
     public void SetData(Sprite sprite, int quantity)
