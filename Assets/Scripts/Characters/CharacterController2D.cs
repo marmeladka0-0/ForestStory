@@ -121,7 +121,7 @@ public class CharacterController2D : MonoBehaviour
             rb.position = transform.position;
             rb.linearVelocity = Vector2.zero;
         }
-        targetNPC = null;
+        //targetNPC = null;
         stuckTimer = 0f;
     }
 

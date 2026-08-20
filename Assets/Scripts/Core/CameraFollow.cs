@@ -1,21 +1,39 @@
 using UnityEngine;
 
+[RequireComponent(typeof(Camera))]
 public class CameraFollow : MonoBehaviour
 {
     [Header("Characters")]
-    [SerializeField] private Transform grandfather;  
-    [SerializeField] private Transform granddaughter;  
+    [SerializeField] private Transform grandfather;
+    [SerializeField] private Transform granddaughter;
 
     [Header("Camera settings")]
-    [SerializeField] private float smoothSpeed = 5f;     
+    [SerializeField] private float smoothSpeed = 5f;
     [SerializeField] private Vector3 offset = new Vector3(0, 0, -10f);
 
-    [Header("Map Bounds")]
-    [SerializeField] private bool useBounds = false;  //bounds for the camera
-    [SerializeField] private Vector2 minBounds;          
-    [SerializeField] private Vector2 maxBounds;          
+    [Header("2D Camera Size (Zoom)")]
+    [SerializeField] private float cameraSize = 7f; // Standard 2D size (increase to zoom out, decrease to zoom in)
 
-    private int currentSelectedID = 0; //who is selected
+    [Header("Map Bounds")]
+    [SerializeField] private bool useBounds = false;  // Bounds for the camera
+    [SerializeField] private Vector2 minBounds;
+    [SerializeField] private Vector2 maxBounds;
+
+    private Camera cam;
+    private int currentSelectedID = 0; // 0 - both, 1 - grandfather, 2 - granddaughter
+
+    private void Awake()
+    {
+        cam = GetComponent<Camera>();
+        UpdateCameraSize();
+    }
+
+    private void OnValidate()
+    {
+        // Updates camera size instantly in the Unity Editor when changing the slider/value
+        if (cam == null) cam = GetComponent<Camera>();
+        UpdateCameraSize();
+    }
 
     private void OnEnable()
     {
@@ -38,7 +56,7 @@ public class CameraFollow : MonoBehaviour
 
         Vector3 targetPosition;
 
-        //Count the position of the camera
+        // Calculate target position based on selected character(s)
         if (currentSelectedID == 1)
         {
             targetPosition = grandfather.position;
@@ -52,18 +70,26 @@ public class CameraFollow : MonoBehaviour
             targetPosition = (grandfather.position + granddaughter.position) / 2f;
         }
 
-        //Add a Z offset (-10?) to a targetPosition
+        // Apply offset (Z-axis offset is essential for 2D cameras)
         targetPosition += offset;
 
-        //If there are some bounds on the map and it is the turn on
-        //=> we add some global bounds for camera too
+        // Clamp camera position within map bounds if enabled
         if (useBounds)
         {
             targetPosition.x = Mathf.Clamp(targetPosition.x, minBounds.x, maxBounds.x);
             targetPosition.y = Mathf.Clamp(targetPosition.y, minBounds.y, maxBounds.y);
         }
 
-        //move a camera to a target point
+        // Smoothly interpolate camera position
         transform.position = Vector3.Lerp(transform.position, targetPosition, smoothSpeed * Time.deltaTime);
+    }
+
+    // Apply orthographic size to the camera component
+    private void UpdateCameraSize()
+    {
+        if (cam != null && cam.orthographic)
+        {
+            cam.orthographicSize = cameraSize;
+        }
     }
 }
